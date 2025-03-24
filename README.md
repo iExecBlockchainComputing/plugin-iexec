@@ -4,7 +4,7 @@ A robust iExec Plugin for ElizaOS that provides some iExec functionality.
 
 ## Features
 
-- create a protectedData thought the iExec Protocol
+- Fetch the RLC token balance of a wallet on the iExec sidechain (Bellecour).
 
 ## Prerequisites
 
