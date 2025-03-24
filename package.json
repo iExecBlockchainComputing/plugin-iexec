@@ -1,0 +1,49 @@
+{
+  "name": "@elizaos/plugin-iexec",
+  "description": "iExec ElizaOS plugin",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+      "./package.json": "./package.json",
+      ".": {
+        "import": {
+              "@elizaos/source": "./src/index.ts",
+              "types": "./dist/index.d.ts",
+              "default": "./dist/index.js"
+            }
+          }
+  },
+  "files": [
+      "dist"
+  ],
+  "scripts": {
+    "build": "tsup --format esm --dts",
+    "dev": "tsup --format esm --dts --watch",
+    "lint": "prettier --write ./src",
+    "format": "prettier --write ./src",
+    "format:check": "prettier --check ./src"
+  },
+  "dependencies": {
+    "@elizaos/core": "latest",
+    "ethers": "^6.13.5",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "prettier": "3.5.3",
+    "tsup": "8.4.0"
+  },
+    "agentConfig": {
+      "pluginType": "elizaos:plugin:1.0.0",
+      "pluginParameters": {
+        "IEXEC_RPC_URL": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Wallet secret key is required",
+          "optional": false
+        }
+      }
+    }
+}
