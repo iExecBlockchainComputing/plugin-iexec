@@ -36,7 +36,7 @@
     "tsup": "8.4.0"
   },
     "agentConfig": {
-      "pluginType": "elizaos:plugin:1.0.0",
+      "pluginType": "elizaos:plugin:0.0.1",
       "pluginParameters": {
         "IEXEC_RPC_URL": {
           "type": "string",
