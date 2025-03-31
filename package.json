@@ -7,17 +7,17 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-      "./package.json": "./package.json",
-      ".": {
-        "import": {
-              "@elizaos/source": "./src/index.ts",
-              "types": "./dist/index.d.ts",
-              "default": "./dist/index.js"
-            }
-          }
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "@elizaos/source": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
   },
   "files": [
-      "dist"
+    "dist"
   ],
   "scripts": {
     "build": "tsup --format esm --dts",
@@ -28,22 +28,26 @@
   },
   "dependencies": {
     "@elizaos/core": "latest",
+    "@iexec/dataprotector": "2.0.0-beta.13",
     "ethers": "^6.13.5",
+    "iexec": "^8.14.1",
+    "install": "^0.13.0",
+    "npm": "^11.2.0",
     "zod": "3.24.2"
   },
   "devDependencies": {
     "prettier": "3.5.3",
     "tsup": "8.4.0"
   },
-    "agentConfig": {
-      "pluginType": "elizaos:plugin:0.0.1",
-      "pluginParameters": {
-        "IEXEC_RPC_URL": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Wallet secret key is required",
-          "optional": false
-        }
+  "agentConfig": {
+    "pluginType": "elizaos:plugin:0.0.1",
+    "pluginParameters": {
+      "MY_WALLET_ADDRESS": {
+        "type": "string",
+        "minLength": 1,
+        "description": "Wallet PUBLIC address",
+        "optional": false
       }
     }
+  }
 }

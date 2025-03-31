@@ -14,7 +14,7 @@ export const examples = [
             name: "Example 2",
             user: "user2",
             content: {
-                text: "Get ETH balance",
+                text: "Get RLC balance",
                 actions: ["GET_WALLET_BALANCE"],  
             },
         },
