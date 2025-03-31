@@ -1,12 +1,6 @@
 import { Action, IAgentRuntime, Memory, State, Content } from "@elizaos/core";
-import { IExec, utils } from "iexec";
-import { Wallet } from "ethers";
 import { examples } from "./examples";
-
-const randomPrivateKey = Wallet.createRandom().privateKey;
-
-const ethProvider = utils.getSignerFromPrivateKey("bellecour", randomPrivateKey);
-const iexec = new IExec({ ethProvider });
+import { iexecProvider } from "../../providers/provider";
 
 export const getWalletBalanceAction: Action = {
   name: "GET_WALLET_BALANCE",
@@ -17,39 +11,55 @@ export const getWalletBalanceAction: Action = {
     _runtime: IAgentRuntime,
     message: Memory
   ): Promise<boolean> => {
-      const addressRegex = /0x[a-fA-F0-9]{40}/;
-      console.log("[VALIDATE] GET_WALLET_BALANCE =>", addressRegex.test(message.content.text));
-    return addressRegex.test(message.content.text);
+    const addressRegex = /0x[a-fA-F0-9]{40}/;
+    const hasAddress = addressRegex.test(message.content.text);
+    const hasEnvAddress = !!process.env.MY_WALLET_ADDRESS?.match(addressRegex);
+    console.log(
+      "[VALIDATE] GET_WALLET_BALANCE =>",
+      hasAddress || hasEnvAddress
+    );
+    return hasAddress || hasEnvAddress;
   },
 
   handler: async (
-    _runtime: IAgentRuntime,
+    runtime: IAgentRuntime,
     message: Memory,
-    _state: State,
+    state: State,
     _options: any,
     callback
   ) => {
     try {
+      const iexecResponse = await iexecProvider.get(runtime, message, state);
+      if (!iexecResponse.success || !iexecResponse.data) {
+        throw new Error(
+          iexecResponse.error || "Failed to initialize iExec SDK"
+        );
+      }
+
+      const iexec = iexecResponse.data.iexec;
+
       const content = message.content as { text: string };
       const addressMatch = content.text.match(/0x[a-fA-F0-9]{40}/);
-      if (!addressMatch) {
-        throw new Error("Valid Ethereum address not found in message");
-      }
-      const address = addressMatch[0];
+      const fallbackAddress = process.env.MY_WALLET_ADDRESS;
 
-      // Protocol (stake, locked)
+      const address = addressMatch?.[0] || fallbackAddress;
+      if (!address) {
+        throw new Error(
+          "No valid Ethereum address found in the prompt or environment"
+        );
+      }
+
       const balance = await iexec.account.checkBalance(address);
       const stakeRLC = Number(balance.stake) * 1e-9;
       const lockedRLC = Number(balance.locked) * 1e-9;
 
-      // On-chain wallet balance
       const { nRLC } = await iexec.wallet.checkBalances(address);
       const onChainRLC = Number(nRLC) * 1e-9;
 
       const responseText = `RLC balance for ${address}:
-        - On-chain Wallet: ${onChainRLC} RLC
-        - iExec Account Stake: ${stakeRLC} RLC
-        - iExec Account Locked: ${lockedRLC} RLC`;
+- On-chain Wallet: ${onChainRLC} RLC
+- iExec Account Stake: ${stakeRLC} RLC
+- iExec Account Locked: ${lockedRLC} RLC`;
 
       const response: Content = {
         text: responseText,
@@ -64,5 +74,5 @@ export const getWalletBalanceAction: Action = {
     }
   },
 
-  examples: examples,
+  examples,
 };
