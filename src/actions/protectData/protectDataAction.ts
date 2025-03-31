@@ -54,7 +54,6 @@ export const protectDataAction: Action = {
                     content: content,
                 },
             });
-            console.log("🚀 ~ protectedData:", protectedData)
             await dataProtectorCore.transferOwnership({
                 protectedData: protectedData.address,
                 newOwner: process.env.MY_WALLET_ADDRESS,
