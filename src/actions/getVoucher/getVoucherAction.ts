@@ -2,17 +2,33 @@ import { Action, IAgentRuntime, Memory, State, Content } from "@elizaos/core";
 import { iexecProvider } from "../../providers/provider";
 import { examples } from "./examples";
 
-export const getUserVoucherAction: Action = {
+export const getVoucherAction: Action = {
   name: "GET_USER_VOUCHER",
-  description: "Get the user's iExec voucher information (balance, expiration, sponsors, etc.)",
+  description:
+    "Get the user's iExec voucher information (balance, expiration, sponsors, etc.)",
   similes: ["Check voucher", "Get iExec voucher info"],
 
-  validate: async (_runtime: IAgentRuntime, message: Memory): Promise<boolean> => {
+  validate: async (
+    _runtime: IAgentRuntime,
+    message: Memory
+  ): Promise<boolean> => {
     const addressRegex = /0x[a-fA-F0-9]{40}/;
-    return addressRegex.test(message.content.text) || !!process.env.MY_WALLET_ADDRESS?.match(addressRegex);
+    const hasAddress = addressRegex.test(message.content.text);
+    const hasEnvAddress = !!process.env.MY_WALLET_ADDRESS?.match(addressRegex);
+    console.log(
+      "[VALIDATE] GET_USER_VOUCHER =>",
+      hasAddress || hasEnvAddress
+    );
+    return hasAddress || hasEnvAddress;
   },
 
-  handler: async (_runtime: IAgentRuntime, message: Memory, _state: State, _options: any, callback) => {
+  handler: async (
+    _runtime: IAgentRuntime,
+    message: Memory,
+    _state: State,
+    _options: any,
+    callback
+  ) => {
     const iexecResponse = await iexecProvider.get(_runtime, message, _state);
 
     if (!iexecResponse.success || !iexecResponse.data) {
@@ -26,7 +42,9 @@ export const getUserVoucherAction: Action = {
     const userAddress = addressMatch?.[0] || process.env.MY_WALLET_ADDRESS;
 
     if (!userAddress) {
-      throw new Error("No valid Ethereum address provided in the message or environment.");
+      throw new Error(
+        "No valid Ethereum address provided in the message or environment."
+      );
     }
 
     const userVoucher = await iexec.voucher.showUserVoucher(userAddress);

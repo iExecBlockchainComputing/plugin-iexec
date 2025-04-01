@@ -39,4 +39,14 @@ export const examples = [
         },
       },
     ],
+    [
+      {
+        name: "Example 5",
+        user: "user5",
+        content: {
+          text: "Show user voucher for this wallet",
+          actions: ["GET_USER_VOUCHER"],
+        },
+      },
+    ],
   ];
