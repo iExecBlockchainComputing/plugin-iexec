@@ -1,4 +1,11 @@
-import { Action, IAgentRuntime, Memory, State, Content } from "@elizaos/core";
+import {
+  Action,
+  IAgentRuntime,
+  Memory,
+  State,
+  Content,
+  elizaLogger,
+} from "@elizaos/core";
 import { iexecProvider } from "../../providers/provider";
 import { examples } from "./examples";
 
@@ -6,19 +13,20 @@ export const getVoucherAction: Action = {
   name: "GET_USER_VOUCHER",
   description:
     "Get the user's iExec voucher information (balance, expiration, sponsors, etc.)",
-  similes: ["Check voucher", "Get iExec voucher info"],
+  similes: [
+    "Check voucher",
+    "Get iExec voucher info",
+    "Retrieve voucher details",
+  ],
 
   validate: async (
     _runtime: IAgentRuntime,
     message: Memory
   ): Promise<boolean> => {
+    elizaLogger.log("Action: GET_USER_VOUCHER, Message:", message);
     const addressRegex = /0x[a-fA-F0-9]{40}/;
     const hasAddress = addressRegex.test(message.content.text);
     const hasEnvAddress = !!process.env.MY_WALLET_ADDRESS?.match(addressRegex);
-    console.log(
-      "[VALIDATE] GET_USER_VOUCHER =>",
-      hasAddress || hasEnvAddress
-    );
     return hasAddress || hasEnvAddress;
   },
 
@@ -47,9 +55,10 @@ export const getVoucherAction: Action = {
       );
     }
 
-    const userVoucher = await iexec.voucher.showUserVoucher(userAddress);
+    try {
+      const userVoucher = await iexec.voucher.showUserVoucher(userAddress);
 
-    const responseText = `Voucher details for ${userVoucher.address}:
+      const responseText = `Voucher details for ${userVoucher.address}:
 - Balance: ${userVoucher.balance} RLC
 - Expiration: ${userVoucher.expirationTimestamp}
 - Sponsored Apps: ${userVoucher.sponsoredApps.join(", ") || "None"}
@@ -58,13 +67,30 @@ export const getVoucherAction: Action = {
 - Allowance: ${userVoucher.allowanceAmount}
 - Authorized Accounts: ${userVoucher.authorizedAccounts.join(", ") || "None"}`;
 
-    const response: Content = {
-      text: responseText,
-      actions: ["GET_USER_VOUCHER"],
-    };
+      const response: Content = {
+        text: responseText,
+        actions: ["GET_USER_VOUCHER"],
+      };
 
-    await callback(response);
-    return response;
+      await callback(response);
+      return response;
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.includes("No Voucher found")
+      ) {
+        const response: Content = {
+          text: `No voucher found for wallet ${userAddress}. Go to iExec discord to claim your voucher : https://discord.com/invite/aXH5ym5H4k`,
+          actions: ["GET_USER_VOUCHER"],
+        };
+
+        await callback(response);
+        return response;
+      }
+
+      console.error("[iExec Plugin] Unexpected error fetching voucher:", error);
+      throw new Error("Failed to get voucher information.");
+    }
   },
 
   examples,

@@ -51,10 +51,20 @@ export const protectData_examples = [
     ],
     [
         {
-            name: "Example 5",
-            user: "user5",
+            name: "Example 6",
+            user: "user6",
             content: {
                 text: "protect my data Using dataProtector from iExec plugin: content",
+                actions: ["PROTECT_DATA"],
+            },
+        },
+    ],
+    [
+        {
+            name: "Example 7",
+            user: "user7",
+            content: {
+                text: "i would to protect this Data: secret@!!",
                 actions: ["PROTECT_DATA"],
             },
         },

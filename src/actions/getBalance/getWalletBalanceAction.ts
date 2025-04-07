@@ -1,4 +1,11 @@
-import { Action, IAgentRuntime, Memory, State, Content } from "@elizaos/core";
+import {
+  Action,
+  IAgentRuntime,
+  Memory,
+  State,
+  Content,
+  elizaLogger,
+} from "@elizaos/core";
 import { examples } from "./examples";
 import { iexecProvider } from "../../providers/provider";
 
@@ -11,13 +18,10 @@ export const getWalletBalanceAction: Action = {
     _runtime: IAgentRuntime,
     message: Memory
   ): Promise<boolean> => {
+    elizaLogger.log("Action: GET_WALLET_BALANCE, Message:", message);
     const addressRegex = /0x[a-fA-F0-9]{40}/;
     const hasAddress = addressRegex.test(message.content.text);
     const hasEnvAddress = !!process.env.MY_WALLET_ADDRESS?.match(addressRegex);
-    console.log(
-      "[VALIDATE] GET_WALLET_BALANCE =>",
-      hasAddress || hasEnvAddress
-    );
     return hasAddress || hasEnvAddress;
   },
 

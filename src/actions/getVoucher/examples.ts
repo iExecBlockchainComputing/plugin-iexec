@@ -49,4 +49,14 @@ export const examples = [
         },
       },
     ],
+    [
+      {
+        name: "Example 6",
+        user: "user6",
+        content: {
+          text: "Give me my voucher data",
+          actions: ["GET_USER_VOUCHER"],
+        },
+      },
+    ],
   ];

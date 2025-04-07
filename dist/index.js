@@ -1,3 +1,8 @@
+// src/actions/getBalance/getWalletBalanceAction.ts
+import {
+  elizaLogger
+} from "@elizaos/core";
+
 // src/actions/getBalance/examples.ts
 var examples = [
   [
@@ -48,13 +53,10 @@ var getWalletBalanceAction = {
   description: "Get the RLC balance of a wallet address using iExec SDK",
   similes: ["Check balance", "Get RLC balance"],
   validate: async (_runtime, message) => {
+    elizaLogger.log("Action: GET_WALLET_BALANCE, Message:", message);
     const addressRegex = /0x[a-fA-F0-9]{40}/;
     const hasAddress = addressRegex.test(message.content.text);
     const hasEnvAddress = !!process.env.MY_WALLET_ADDRESS?.match(addressRegex);
-    console.log(
-      "[VALIDATE] GET_WALLET_BALANCE =>",
-      hasAddress || hasEnvAddress
-    );
     return hasAddress || hasEnvAddress;
   },
   handler: async (runtime, message, state, _options, callback) => {
@@ -99,6 +101,9 @@ var getWalletBalanceAction = {
 };
 
 // src/actions/protectData/protectDataAction.ts
+import {
+  elizaLogger as elizaLogger2
+} from "@elizaos/core";
 import { getWeb3Provider, IExecDataProtectorCore } from "@iexec/dataprotector";
 import { Wallet as Wallet2 } from "ethers";
 
@@ -172,17 +177,8 @@ var protectDataAction = {
   description: "Protect data using iExec confidential computing",
   similes: ["Protect my data", "Encrypt this information", "Make this confidential"],
   validate: async (_runtime, message) => {
-    const protectIntentPhrases = [
-      "protect this data",
-      "encrypt this",
-      "make this confidential",
-      "keep this private"
-    ];
-    const test = protectIntentPhrases.some(
-      (phrase) => message.content.text.toLowerCase().includes(phrase)
-    );
-    console.log("[VALIDATE] PROTECT_DATA =>", test);
-    return test;
+    elizaLogger2.log("Action: PROTECT_DATA, Message:", message);
+    return true;
   },
   handler: async (_runtime, message, _state, _options, callback) => {
     console.log("[HANDLER] PROTECT_DATA =>", message.content.text);
@@ -234,6 +230,11 @@ function extractContentToProtect(text) {
   }
   return text;
 }
+
+// src/actions/getVoucher/getVoucherAction.ts
+import {
+  elizaLogger as elizaLogger3
+} from "@elizaos/core";
 
 // src/actions/getVoucher/examples.ts
 var examples2 = [
@@ -293,15 +294,16 @@ var examples2 = [
 var getVoucherAction = {
   name: "GET_USER_VOUCHER",
   description: "Get the user's iExec voucher information (balance, expiration, sponsors, etc.)",
-  similes: ["Check voucher", "Get iExec voucher info"],
+  similes: [
+    "Check voucher",
+    "Get iExec voucher info",
+    "Retrieve voucher details"
+  ],
   validate: async (_runtime, message) => {
+    elizaLogger3.log("Action: GET_USER_VOUCHER, Message:", message);
     const addressRegex = /0x[a-fA-F0-9]{40}/;
     const hasAddress = addressRegex.test(message.content.text);
     const hasEnvAddress = !!process.env.MY_WALLET_ADDRESS?.match(addressRegex);
-    console.log(
-      "[VALIDATE] GET_USER_VOUCHER =>",
-      hasAddress || hasEnvAddress
-    );
     return hasAddress || hasEnvAddress;
   },
   handler: async (_runtime, message, _state, _options, callback) => {
@@ -318,8 +320,9 @@ var getVoucherAction = {
         "No valid Ethereum address provided in the message or environment."
       );
     }
-    const userVoucher = await iexec.voucher.showUserVoucher(userAddress);
-    const responseText = `Voucher details for ${userVoucher.address}:
+    try {
+      const userVoucher = await iexec.voucher.showUserVoucher(userAddress);
+      const responseText = `Voucher details for ${userVoucher.address}:
 - Balance: ${userVoucher.balance} RLC
 - Expiration: ${userVoucher.expirationTimestamp}
 - Sponsored Apps: ${userVoucher.sponsoredApps.join(", ") || "None"}
@@ -327,12 +330,24 @@ var getVoucherAction = {
 - Sponsored Workerpools: ${userVoucher.sponsoredWorkerpools.join(", ") || "None"}
 - Allowance: ${userVoucher.allowanceAmount}
 - Authorized Accounts: ${userVoucher.authorizedAccounts.join(", ") || "None"}`;
-    const response = {
-      text: responseText,
-      actions: ["GET_USER_VOUCHER"]
-    };
-    await callback(response);
-    return response;
+      const response = {
+        text: responseText,
+        actions: ["GET_USER_VOUCHER"]
+      };
+      await callback(response);
+      return response;
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("No Voucher found")) {
+        const response = {
+          text: `No voucher found for wallet ${userAddress}. Go to iExec discord to claim your voucher : https://discord.com/invite/aXH5ym5H4k`,
+          actions: ["GET_USER_VOUCHER"]
+        };
+        await callback(response);
+        return response;
+      }
+      console.error("[iExec Plugin] Unexpected error fetching voucher:", error);
+      throw new Error("Failed to get voucher information.");
+    }
   },
   examples: examples2
 };
@@ -341,8 +356,8 @@ var getVoucherAction = {
 var iexecPlugin = {
   name: "iexec",
   description: "Plugin for interacting with iexec protocol",
-  actions: [protectDataAction, getVoucherAction, getWalletBalanceAction]
-  // implement actions and use them here
+  actions: [protectDataAction, getVoucherAction, getWalletBalanceAction],
+  providers: [iexecProvider]
 };
 export {
   iexecPlugin

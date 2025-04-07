@@ -1,5 +1,12 @@
 
-import { Action, Content, IAgentRuntime, Memory, State } from "@elizaos/core";
+import {
+  Action,
+  Content,
+  elizaLogger,
+  IAgentRuntime,
+  Memory,
+  State,
+} from "@elizaos/core";
 import {getWeb3Provider,IExecDataProtectorCore} from "@iexec/dataprotector"
 import { Wallet } from "ethers";
 import { protectData_examples } from "./examples";
@@ -13,19 +20,8 @@ export const protectDataAction: Action = {
         _runtime: IAgentRuntime,
         message: Memory
     ): Promise<boolean> => {
-        // Check for intent to protect data in the message
-        const protectIntentPhrases = [
-            "protect this data",
-            "encrypt this",
-            "make this confidential",
-            "keep this private"
-        ];
-        
-        const test=  protectIntentPhrases.some(phrase => 
-            message.content.text.toLowerCase().includes(phrase)
-        );
-        console.log("[VALIDATE] PROTECT_DATA =>", test);
-        return test;
+        elizaLogger.log("Action: PROTECT_DATA, Message:", message);
+        return true;
     },
 
     handler: async (
