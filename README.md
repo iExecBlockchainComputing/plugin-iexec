@@ -2,32 +2,83 @@
 
 A plugin that allows you to interact with the iExec Protocol directly from your messaging interface, providing secure and easy access to RLC balance checking, voucher management, and confidential computing capabilities.
 
+## Setup
+
+1. Clone and Setup ElizaOS
+
+```sh
+# Clone the repository
+git clone https://github.com/elizaOS/eliza.git
+
+# Navigate to the project directory
+cd eliza
+
+# Checkout the latest release
+git checkout $(git describe --tags --abbrev=0)
+# If the above doesn't checkout the latest release, this should work:
+# git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+
+# Use the required Node version (install NVM if necessary)
+nvm use
+
+# Install dependencies
+pnpm install --no-frozen-lockfile
+```
+
+2. Plugin installation
+
+```sh
+# Add iexec plugin if not already installed
+npx elizaos plugins add @elizaos-plugins/plugin-iexec
+
+# List all installed plugins (verify plugin-iexec installation)
+npx elizaos plugins list
+```
+
+3. 🔧 Plugin Configuration
+
+Create a .env file at the root of your ElizaOS project with the following content:
+
+```sh
+MY_WALLET_ADDRESS=0xYourWalletAddressHere
+```
+
+Configure Default Character (TypeScript).In your `./agent/src/defaultCharacter.ts` file, import the iExec plugin and add it to the plugins array:
+
+```typescript
+import { iexecPlugin } from "@elizaos-plugins/plugin-iexec";
+
+export const defaultCharacter: Character = {
+  name: "Eliza",
+  username: "eliza",
+  plugins: [iexecPlugin],
+  modelProvider: ModelProviderName.OLLAMA,
+  // ... other configuration
+};
+```
+
+Configure JSON Character File (if applicable). If you’re defining characters via JSON instead of TypeScript, add the iExec plugin as follows:
+
+```json
+{
+  "name": "Eliza",
+  "username": "eliza",
+  "plugins": ["@elizaos-plugins/plugin-iexec"],
+  "modelProvider": "OLLAMA"
+}
+```
+
+4. Build the project
+
+```sh
+pnpm run build
+```
+
 ## Features
 
 - RLC Balance Checking: Query wallet balances instantly
 - Voucher Management: Retrieve and view voucher information
 - Confidential Computing: Protect sensitive data using iExec's encryption infrastructure
-
-## Prerequisites
-
-- NodeJS 18.0 or later
-- ElizaOS installation
-
-## Installation
-
-```bash
-npm install @elizaos-plugins/iexec
-```
-
-## Configuration
-
-Add the adapter to your ElizaOS configuration:
-
-```json
-{
-  "plugins": ["@elizaos-plugins/iexec"]
-}
-```
 
 ## Usage
 
