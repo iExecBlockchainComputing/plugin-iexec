@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/plugin-iexec",
+  "name": "@elizaos-plugins/plugin-iexec",
   "description": "iExec ElizaOS plugin",
   "version": "0.0.1",
   "type": "module",
