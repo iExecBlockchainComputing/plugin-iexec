@@ -12,84 +12,100 @@ This project uses **Ollama**, a tool that allows you to run language models loca
 
 You must have Ollama installed and a model running before starting ElizaOS.
 
-Installation instructions: https://ollama.com/
+To install Ollama, follow the instructions from the [official website](https://ollama.com/).
 
-Once installed, start a model (e.g., `gemma3`) using:
+Once installed, run the model (e.g., `gemma3`) with the following command:
 
     ollama run gemma3
 
-Make sure the model is compatible with ElizaOS and remains running during development.
+Make sure the model is compatible with ElizaOS and is running properly during development.
 
 📦 Setup
 --------
 
 1. Clone and Setup ElizaOS
 
-    git clone https://github.com/elizaOS/eliza.git
-    cd eliza
-    git checkout $(git describe --tags --abbrev=0)
-    # Alternative if the above doesn't work:
-    # git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
-    nvm use
-    pnpm install --no-frozen-lockfile
+    Clone the repository:
 
-2. Plugin Installation
+        git clone https://github.com/elizaOS/eliza.git
 
-    # Add iExec plugin
-    npx elizaos plugins add @elizaos-plugins/plugin-iexec
+    Navigate to the project directory:
 
-    # List plugins to verify installation
-    npx elizaos plugins list
+        cd eliza
+
+    Checkout the latest release:
+
+        git checkout $(git describe --tags --abbrev=0)
+
+    Use the required Node version (install NVM if necessary):
+
+        nvm use
+
+    Install dependencies:
+
+        pnpm install --no-frozen-lockfile
+
+2. Install the iExec plugin
+
+    Add the iExec plugin:
+
+        npx elizaos plugins add @elizaos-plugins/plugin-iexec
+
+    Verify plugin installation:
+
+        npx elizaos plugins list
 
 3. Plugin Configuration
 
-Create a `.env` file at the root of your ElizaOS project with the following content:
+    Create a `.env` file at the root of your ElizaOS project with the following content:
 
-    # Ethereum wallet address used by the iExec plugin
-    MY_WALLET_ADDRESS=0xYourWalletAddressHere
+        # Ethereum wallet address used by the iExec plugin
+        MY_WALLET_ADDRESS=0xYourWalletAddressHere
 
-    # Ollama configuration (local LLM)
-    OLLAMA_SERVER_URL=http://127.0.0.1:11434
-    OLLAMA_MODEL=gemma3:latest
-    SMALL_OLLAMA_MODEL=gemma3:latest
-    MEDIUM_OLLAMA_MODEL=gemma3:latest
-    LARGE_OLLAMA_MODEL=gemma3:latest
+        # Ollama configuration (local LLM)
+        OLLAMA_SERVER_URL=http://127.0.0.1:11434
+        OLLAMA_MODEL=gemma3:latest
+        SMALL_OLLAMA_MODEL=gemma3:latest
+        MEDIUM_OLLAMA_MODEL=gemma3:latest
+        LARGE_OLLAMA_MODEL=gemma3:latest
 
-> These variables allow ElizaOS to connect to your local Ollama server and use the specified language models. You can customize the model names based on the ones installed locally.
+    These variables allow ElizaOS to connect to your local Ollama server and use the specified language models. You can customize the model names based on the ones installed locally.
 
 4. Default Character Setup
 
-If using TypeScript, modify `./agent/src/defaultCharacter.ts`:
+    If using TypeScript, modify `./agent/src/defaultCharacter.ts`:
 
-    import { iexecPlugin } from "@elizaos-plugins/plugin-iexec";
+        import { iexecPlugin } from "@elizaos-plugins/plugin-iexec";
 
-    export const defaultCharacter: Character = {
-      name: "Eliza",
-      username: "eliza",
-      plugins: [iexecPlugin],
-      modelProvider: ModelProviderName.OLLAMA,
-      // ... other configuration
-    };
+        export const defaultCharacter: Character = {
+          name: "Eliza",
+          username: "eliza",
+          plugins: [iexecPlugin],
+          modelProvider: ModelProviderName.OLLAMA,
+          // ... other configuration
+        };
 
-If using a JSON character file:
+    If using a JSON character file:
 
-    {
-      "name": "Eliza",
-      "username": "eliza",
-      "plugins": ["@elizaos-plugins/plugin-iexec"],
-      "modelProvider": "OLLAMA"
-    }
+        {
+          "name": "Eliza",
+          "username": "eliza",
+          "plugins": ["@elizaos-plugins/plugin-iexec"],
+          "modelProvider": "OLLAMA"
+        }
 
 5. Build the Project
 
-    pnpm run build
+    Build the project with:
+
+        pnpm run build
 
 ✨ Features
 -----------
 
-- **RLC Balance Checking**: Query wallet balances instantly
-- **Voucher Management**: Retrieve and view voucher information
-- **Confidential Computing**: Protect sensitive data using iExec's encryption infrastructure
+- **RLC Balance Checking**: Query wallet balances instantly.
+- **Voucher Management**: Retrieve and view voucher information.
+- **Confidential Computing**: Protect sensitive data using iExec's encryption infrastructure.
 
 🧑‍💻 Usage
 ----------
@@ -124,23 +140,25 @@ Examples:
 You will receive a confirmation link to view your protected data on the iExec Explorer.
 
 🔐 How It Works
+---------------
 
-1. The plugin identifies your request to protect information
-2. It extracts the sensitive content from your message
-3. The data is encrypted and protected using iExec's confidential computing
-4. You receive a confirmation with a link to the protected data on the iExec Explorer
+1. The plugin identifies your request to protect information.
+2. It extracts the sensitive content from your message.
+3. The data is encrypted and protected using iExec's confidential computing.
+4. You receive a confirmation with a link to the protected data on the iExec Explorer.
 
 🛡️ Privacy Considerations
+--------------------------
 
-- Protected data is encrypted and can only be accessed by authorized parties
-- Your sensitive information is never stored in plain text
-- All data is managed through the iExec infrastructure with blockchain-level security
+- Protected data is encrypted and can only be accessed by authorized parties.
+- Your sensitive information is never stored in plain text.
+- All data is managed through the iExec infrastructure with blockchain-level security.
 
 🤝 Support & Contributing
 --------------------------
 
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
+1. Fork the repository.
+2. Create a feature branch.
+3. Add tests for new functionality.
+4. Submit a pull request.
 
