@@ -1,160 +1,191 @@
-# iExec Plugin for ElizaOS
+iExec Plugin for ElizaOS
+=========================
 
 A plugin that allows you to interact with the iExec Protocol directly from your messaging interface, providing secure and easy access to RLC balance checking, voucher management, and confidential computing capabilities.
 
-## Setup
+⚙️ Prerequisites
+----------------
+
+### Ollama (Local AI Model — Used in This Example)
+
+This project **uses Ollama in our setup examples**, which allows running language models locally for privacy and performance. However, **you are free to use any compatible model provider with ElizaOS**.
+
+If you choose to use Ollama, install it from the [official website](https://ollama.com/), and run a model (e.g., `gemma3`) with:
+
+```bash
+ollama run gemma3
+```
+
+Make sure your selected model is compatible with ElizaOS and running during development.
+
+📦 Setup
+--------
 
 1. Clone and Setup ElizaOS
 
-```sh
-# Clone the repository
-git clone https://github.com/elizaOS/eliza.git
+    Clone the repository:
 
-# Navigate to the project directory
-cd eliza
+    ```bash
+    git clone https://github.com/elizaOS/eliza.git
+    ```
 
-# Checkout the latest release
-git checkout $(git describe --tags --abbrev=0)
-# If the above doesn't checkout the latest release, this should work:
-# git checkout $(git describe --tags `git rev-list --tags --max-count=1`)
+    Navigate to the project directory:
 
-# Use the required Node version (install NVM if necessary)
-nvm use
+    ```bash
+    cd eliza
+    ```
 
-# Install dependencies
-pnpm install --no-frozen-lockfile
-```
+    Checkout the latest release:
 
-2. Plugin installation
+    ```bash
+    git checkout $(git describe --tags --abbrev=0)
+    ```
 
-```sh
-# Add iexec plugin if not already installed
-npx elizaos plugins add @elizaos-plugins/plugin-iexec
+    Use the required Node version (install NVM if necessary):
 
-# List all installed plugins (verify plugin-iexec installation)
-npx elizaos plugins list
-```
+    ```bash
+    nvm use
+    ```
 
-3. 🔧 Plugin Configuration
+    Install dependencies:
 
-Create a .env file at the root of your ElizaOS project with the following content:
+    ```bash
+    pnpm install --no-frozen-lockfile
+    ```
 
-```sh
-MY_WALLET_ADDRESS=0xYourWalletAddressHere
-```
+2. Install the iExec plugin
 
-Configure Default Character (TypeScript).In your `./agent/src/defaultCharacter.ts` file, import the iExec plugin and add it to the plugins array:
+    Add the iExec plugin:
 
-```typescript
-import { iexecPlugin } from "@elizaos-plugins/plugin-iexec";
+    ```bash
+    npx elizaos plugins add @elizaos-plugins/plugin-iexec
+    ```
 
-export const defaultCharacter: Character = {
-  name: "Eliza",
-  username: "eliza",
-  plugins: [iexecPlugin],
-  modelProvider: ModelProviderName.OLLAMA,
-  // ... other configuration
-};
-```
+    Verify plugin installation:
 
-Configure JSON Character File (if applicable). If you’re defining characters via JSON instead of TypeScript, add the iExec plugin as follows:
+    ```bash
+    npx elizaos plugins list
+    ```
 
-```json
-{
-  "name": "Eliza",
-  "username": "eliza",
-  "plugins": ["@elizaos-plugins/plugin-iexec"],
-  "modelProvider": "OLLAMA"
-}
-```
+3. Plugin Configuration
 
-4. Build the project
+    Create a `.env` file at the root of your ElizaOS project with the following content:
 
-```sh
-pnpm run build
-```
+    ```env
+    # Ethereum wallet address used by the iExec plugin
+    MY_WALLET_ADDRESS=0xYourWalletAddressHere
 
-## Features
+    # Ollama configuration (local LLM)
+    OLLAMA_SERVER_URL=http://127.0.0.1:11434
+    OLLAMA_MODEL=gemma3:latest
+    SMALL_OLLAMA_MODEL=gemma3:latest
+    MEDIUM_OLLAMA_MODEL=gemma3:latest
+    LARGE_OLLAMA_MODEL=gemma3:latest
+    ```
 
-- RLC Balance Checking: Query wallet balances instantly
-- Voucher Management: Retrieve and view voucher information
-- Confidential Computing: Protect sensitive data using iExec's encryption infrastructure
+    These variables allow ElizaOS to connect to your local Ollama server and use the specified language models. You can customize the model names based on the ones installed locally.
 
-## Usage
+4. Default Character Setup
+
+    If using TypeScript, modify `./agent/src/defaultCharacter.ts`:
+
+    ```ts
+    import { iexecPlugin } from "@elizaos-plugins/plugin-iexec";
+
+    export const defaultCharacter: Character = {
+      name: "Eliza",
+      username: "eliza",
+      plugins: [iexecPlugin],
+      modelProvider: ModelProviderName.OLLAMA,
+      // ... other configuration
+    };
+    ```
+
+    If using a JSON character file:
+
+    ```json
+    {
+      "name": "Eliza",
+      "username": "eliza",
+      "plugins": ["@elizaos-plugins/plugin-iexec"],
+      "modelProvider": "OLLAMA"
+    }
+    ```
+
+5. Build the Project
+
+    Build the project with:
+
+    ```bash
+    pnpm run build
+    ```
+
+✨ Features
+-----------
+
+- **RLC Balance Checking**: Query wallet balances instantly.
+- **Voucher Management**: Retrieve and view voucher information.
+- **Confidential Computing**: Protect sensitive data using iExec's encryption infrastructure.
+
+🧑‍💻 Usage
+----------
 
 ### Getting RLC Balance
 
-Check the balance of any Ethereum wallet by providing the wallet address. If no address is specified, the plugin will use the wallet configured in your `.env` file.
+Check the balance of any Ethereum wallet by providing the address. If no address is specified, the plugin will use the wallet configured in your `.env`.
 
 ```txt
 Check my balance
-```
-
-or
-
-```txt
 Check balance for 0x1234567890abcdef1234567890abcdef12345678
 ```
 
 ### Fetching Voucher Data
 
-Access voucher details associated with any wallet address. The plugin will default to your configured wallet in the `.env`file if no address is provided.
-
-Examples:
-
 ```txt
 Show user voucher for this wallet 0x1234567890abcdef1234567890abcdef12345678
-```
-
-```txt
 Get my voucher details
 ```
 
 ### Protecting Sensitive Data
 
-You can protect sensitive information using iExec's confidential computing capabilities. The plugin will encrypt your data and store it securely on the iExec infrastructure.
+Use one of these phrases to trigger encryption:
 
-To protect data, use one of these phrase patterns in your message:
-
-- "protect this data: [your sensitive data]"
-- "encrypt this: [your sensitive data]"
-- "make this confidential: [your sensitive data]"
-- "keep this private: [your sensitive data]"
+```txt
+protect this data: [your sensitive data]
+encrypt this: [your sensitive data]
+make this confidential: [your sensitive data]
+keep this private: [your sensitive data]
+```
 
 Examples:
 
 ```txt
 Please protect this data: My API key is sj238sjdh3r2jr238rjsd
-```
-
-```txt
 I need to encrypt this: Password123!@#
-```
-
-```txt
 Make this confidential: Contract details for client XYZ
 ```
 
-After successfully protecting your data, you'll receive a link to view your protected data on the iExec Explorer.
+You will receive a confirmation link to view your protected data on the iExec Explorer.
 
-#### How It Works
+🔐 How It Works
+---------------
 
-When you protect data:
+1. The plugin identifies your request to protect information.
+2. It extracts the sensitive content from your message.
+3. The data is encrypted and protected using iExec's confidential computing.
+4. You receive a confirmation with a link to the protected data on the iExec Explorer.
 
-1. The plugin identifies your request to protect information
-2. It extracts the sensitive content from your message
-3. The data is encrypted and protected using iExec's confidential computing
-4. You receive a confirmation with a link to the protected data on the iExec Explorer
+🛡️ Privacy Considerations
+--------------------------
 
-#### Privacy Considerations
+- Protected data is encrypted and can only be accessed by authorized parties.
+- Your sensitive information is never stored in plain text.
+- All data is managed through the iExec infrastructure with blockchain-level security.
 
-- Protected data is encrypted and can only be accessed by authorized parties
-- Your sensitive information is never stored in plain text
-- All protected data is managed through the iExec infrastructure with blockchain-level security
+🤝 Support & Contributing
+--------------------------
 
-## Support & Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
+1. Fork the repository.
+2. Create a feature branch.
+3. Add tests for new functionality.
+4. Submit a pull request.
