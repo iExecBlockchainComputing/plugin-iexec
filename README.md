@@ -6,19 +6,17 @@ A plugin that allows you to interact with the iExec Protocol directly from your 
 ⚙️ Prerequisites
 ----------------
 
-### Ollama (Local AI Model)
+### Ollama (Local AI Model — Used in This Example)
 
-This project uses **Ollama**, a tool that allows you to run language models locally, ensuring privacy and performance without relying on external APIs.
+This project **uses Ollama in our setup examples**, which allows running language models locally for privacy and performance. However, **you are free to use any compatible model provider with ElizaOS**.
 
-You must have Ollama installed and a model running before starting ElizaOS.
+If you choose to use Ollama, install it from the [official website](https://ollama.com/), and run a model (e.g., `gemma3`) with:
 
-To install Ollama, follow the instructions from the [official website](https://ollama.com/).
+```bash
+ollama run gemma3
+```
 
-Once installed, run the model (e.g., `gemma3`) with the following command:
-
-    ollama run gemma3
-
-Make sure the model is compatible with ElizaOS and is running properly during development.
+Make sure your selected model is compatible with ElizaOS and running during development.
 
 📦 Setup
 --------
@@ -27,47 +25,63 @@ Make sure the model is compatible with ElizaOS and is running properly during de
 
     Clone the repository:
 
-        git clone https://github.com/elizaOS/eliza.git
+    ```bash
+    git clone https://github.com/elizaOS/eliza.git
+    ```
 
     Navigate to the project directory:
 
-        cd eliza
+    ```bash
+    cd eliza
+    ```
 
     Checkout the latest release:
 
-        git checkout $(git describe --tags --abbrev=0)
+    ```bash
+    git checkout $(git describe --tags --abbrev=0)
+    ```
 
     Use the required Node version (install NVM if necessary):
 
-        nvm use
+    ```bash
+    nvm use
+    ```
 
     Install dependencies:
 
-        pnpm install --no-frozen-lockfile
+    ```bash
+    pnpm install --no-frozen-lockfile
+    ```
 
 2. Install the iExec plugin
 
     Add the iExec plugin:
 
-        npx elizaos plugins add @elizaos-plugins/plugin-iexec
+    ```bash
+    npx elizaos plugins add @elizaos-plugins/plugin-iexec
+    ```
 
     Verify plugin installation:
 
-        npx elizaos plugins list
+    ```bash
+    npx elizaos plugins list
+    ```
 
 3. Plugin Configuration
 
     Create a `.env` file at the root of your ElizaOS project with the following content:
 
-        # Ethereum wallet address used by the iExec plugin
-        MY_WALLET_ADDRESS=0xYourWalletAddressHere
+    ```env
+    # Ethereum wallet address used by the iExec plugin
+    MY_WALLET_ADDRESS=0xYourWalletAddressHere
 
-        # Ollama configuration (local LLM)
-        OLLAMA_SERVER_URL=http://127.0.0.1:11434
-        OLLAMA_MODEL=gemma3:latest
-        SMALL_OLLAMA_MODEL=gemma3:latest
-        MEDIUM_OLLAMA_MODEL=gemma3:latest
-        LARGE_OLLAMA_MODEL=gemma3:latest
+    # Ollama configuration (local LLM)
+    OLLAMA_SERVER_URL=http://127.0.0.1:11434
+    OLLAMA_MODEL=gemma3:latest
+    SMALL_OLLAMA_MODEL=gemma3:latest
+    MEDIUM_OLLAMA_MODEL=gemma3:latest
+    LARGE_OLLAMA_MODEL=gemma3:latest
+    ```
 
     These variables allow ElizaOS to connect to your local Ollama server and use the specified language models. You can customize the model names based on the ones installed locally.
 
@@ -75,30 +89,36 @@ Make sure the model is compatible with ElizaOS and is running properly during de
 
     If using TypeScript, modify `./agent/src/defaultCharacter.ts`:
 
-        import { iexecPlugin } from "@elizaos-plugins/plugin-iexec";
+    ```ts
+    import { iexecPlugin } from "@elizaos-plugins/plugin-iexec";
 
-        export const defaultCharacter: Character = {
-          name: "Eliza",
-          username: "eliza",
-          plugins: [iexecPlugin],
-          modelProvider: ModelProviderName.OLLAMA,
-          // ... other configuration
-        };
+    export const defaultCharacter: Character = {
+      name: "Eliza",
+      username: "eliza",
+      plugins: [iexecPlugin],
+      modelProvider: ModelProviderName.OLLAMA,
+      // ... other configuration
+    };
+    ```
 
     If using a JSON character file:
 
-        {
-          "name": "Eliza",
-          "username": "eliza",
-          "plugins": ["@elizaos-plugins/plugin-iexec"],
-          "modelProvider": "OLLAMA"
-        }
+    ```json
+    {
+      "name": "Eliza",
+      "username": "eliza",
+      "plugins": ["@elizaos-plugins/plugin-iexec"],
+      "modelProvider": "OLLAMA"
+    }
+    ```
 
 5. Build the Project
 
     Build the project with:
 
-        pnpm run build
+    ```bash
+    pnpm run build
+    ```
 
 ✨ Features
 -----------
@@ -114,28 +134,36 @@ Make sure the model is compatible with ElizaOS and is running properly during de
 
 Check the balance of any Ethereum wallet by providing the address. If no address is specified, the plugin will use the wallet configured in your `.env`.
 
-    Check my balance
-    Check balance for 0x1234567890abcdef1234567890abcdef12345678
+```txt
+Check my balance
+Check balance for 0x1234567890abcdef1234567890abcdef12345678
+```
 
 ### Fetching Voucher Data
 
-    Show user voucher for this wallet 0x1234567890abcdef1234567890abcdef12345678
-    Get my voucher details
+```txt
+Show user voucher for this wallet 0x1234567890abcdef1234567890abcdef12345678
+Get my voucher details
+```
 
 ### Protecting Sensitive Data
 
 Use one of these phrases to trigger encryption:
 
-    protect this data: [your sensitive data]
-    encrypt this: [your sensitive data]
-    make this confidential: [your sensitive data]
-    keep this private: [your sensitive data]
+```txt
+protect this data: [your sensitive data]
+encrypt this: [your sensitive data]
+make this confidential: [your sensitive data]
+keep this private: [your sensitive data]
+```
 
 Examples:
 
-    Please protect this data: My API key is sj238sjdh3r2jr238rjsd
-    I need to encrypt this: Password123!@#
-    Make this confidential: Contract details for client XYZ
+```txt
+Please protect this data: My API key is sj238sjdh3r2jr238rjsd
+I need to encrypt this: Password123!@#
+Make this confidential: Contract details for client XYZ
+```
 
 You will receive a confirmation link to view your protected data on the iExec Explorer.
 
@@ -161,4 +189,3 @@ You will receive a confirmation link to view your protected data on the iExec Ex
 2. Create a feature branch.
 3. Add tests for new functionality.
 4. Submit a pull request.
-
